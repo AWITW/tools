@@ -1,12 +1,69 @@
-import { ReactChild, ReactFragment, ReactPortal } from 'react';
-import { history } from 'umi';
-export default function IndexPage(props: { children: boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) {
-  return (
-    <div>
-      <h1>test</h1>
-      <button onClick={()=>history.push("hello")}>跳转</button>
-      <button onClick={()=>history.goBack()}>返回</button>
-      <div style={{ padding: 20 }}>{ props.children }</div>;
-    </div>
-  );
-}
+import type { MenuProps } from 'antd';
+import { Layout, Menu, Breadcrumb } from 'antd';
+import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import React from "react";
+
+import "./index.less";
+const { Header, Content, Sider } = Layout;
+
+const items1: MenuProps['items'] = ['1', '2', '3'].map(key => ({
+  key,
+  label: `nav ${key}`,
+}));
+
+const items2: MenuProps['items'] = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
+  (icon, index) => {
+    const key = String(index + 1);
+
+    return {
+      key: `sub${key}`,
+      icon: React.createElement(icon),
+      label: `subnav ${key}`,
+
+      children: new Array(4).fill(null).map((_, j) => {
+        const subKey = index * 4 + j + 1;
+        return {
+          key: subKey,
+          label: `option${subKey}`,
+        };
+      }),
+    };
+  },
+);
+
+export default () => (
+  <Layout>
+    <Header className="header">
+      <div className="logo" />
+      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} />
+    </Header>
+    <Layout>
+      <Sider width={200} className="site-layout-background">
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={['1']}
+          defaultOpenKeys={['sub1']}
+          style={{ height: '100%', borderRight: 0 }}
+          items={items2}
+        />
+      </Sider>
+      <Layout style={{ padding: '0 24px 24px' }}>
+        <Breadcrumb style={{ margin: '16px 0' }}>
+          <Breadcrumb.Item>Home</Breadcrumb.Item>
+          <Breadcrumb.Item>List</Breadcrumb.Item>
+          <Breadcrumb.Item>App</Breadcrumb.Item>
+        </Breadcrumb>
+        <Content
+          className="site-layout-background"
+          style={{
+            padding: 24,
+            margin: 0,
+            minHeight: 280,
+          }}
+        >
+          123
+        </Content>
+      </Layout>
+    </Layout>
+  </Layout>
+);
